@@ -1,0 +1,19 @@
+section class="flexCol" id="login"
+    article 
+        h3 Enter Code
+        form action="user/login" method="POST" class="flex"
+            input type="number" autocomplete="off" id="password" name="password"
+            input type="submit" id="submit" value=">" class="hover"
+    form action="user/register" method="POST" class="flex"
+        input type="submit" id="submit" value="Generate" class="hover"
+
+
+
+
+javascript:
+    document.getElementById("input").addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("submit").click();
+        }
+    });

@@ -30,3 +30,7 @@ Lösenordshanterare och genererare
 ## 4. Arkitektur (Beskriv filer och mappar - vad gör/innehåller de?).
 
 
+
+
+V. 8
+Idag hade jag lite problem med hur man ska lösa inloggningen. Till skillnad från andra sustem

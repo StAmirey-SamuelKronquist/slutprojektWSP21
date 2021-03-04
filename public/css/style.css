@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;;
+    color: var(--main-text);
+    letter-spacing: .75px;
+}
+
+:root {
+    --main-bg: #4D757A;
+    --alt-bg: #C4C4C4;
+    --con-bg: #B0B0B0;
+    --main-text: #000000;
+    --gray-text: #6D6D6D;
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+::placeholder {
+  color: var(--gray-text);
+}
+
+.hide {
+  display: none;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.flexCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.scrollY {
+  overflow-y: scroll;
+}
+.scrollX {
+  overflow-x: scroll;
+}
+.scrollY::-webkit-scrollbar, .scrollX::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  padding:2px;
+  background-color: var(--contrast);
+}
+.scrollY::-webkit-scrollbar-thumb, .scrollX::-webkit-scrollbar-thumb {
+  background-color: var(--gray-text);
+  border-radius: 5px;
+}
+
+.hover:hover {
+  cursor: pointer;
+  transform: translateY(-3px);
+  -webkit-transition: all .4s cubic-bezier(.2, 0, 0, 1);
+}
+
+
+
+
+
+#container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: var(--main-bg);
+}
+
+
+#container > main {
+    width: 500px;
+    padding: 0 30px;
+    box-sizing: border-box;
+    background-color: var(--alt-bg);
+    position: relative;
+}
+
+#container > main > header {
+    width: 100%;
+}
+#container > main > header > h1 {
+    margin: 0;
+    margin-top: 5px;
+    font-weight: 500;
+    font-size: 26pt;
+}
+#container > main > header > h2 {
+    margin: 0;
+    margin-top: -5px;
+    font-weight: 600;
+    font-size: 8pt;
+}
+
+
+#container > main > section {
+    width: 100%;
+}
+
+#container > main > #login {
+    height: 250px;
+    padding-bottom: 60px;
+    box-sizing: border-box;
+}
+#container > main > #login > article {
+    width: 100%;
+    position: relative;
+}
+#container > main > #login > article > h3 {
+    font-weight: 400;
+    margin: 0;
+    font-size: 15pt;
+}
+#container > main > #login > article > form {
+    width: 100%;
+    height: 50px;
+    background-color: var(--con-bg);
+    position: relative;
+}
+#container > main > #login > article > form > input {
+    border: none;
+    background: none;
+    box-sizing: border-box;
+    height: 100%;
+    font-size: 12pt;
+    font-weight: 500;
+}
+#container > main > #login > article > form > input[type=number] {
+    flex: 1;   
+    padding-left: 20px;
+    
+}
+
+#container > main > #login > article > form > input[type=submit] {
+    width: 50px;
+}
+
+#container > main > #login > form {
+    position: absolute;
+    bottom: 10px;
+}
+#container > main > #login > form > input[type=submit] {
+    margin: 0;
+    color: var(--gray-text);
+    font-size: 12pt;
+    background: none;
+    border: none;
+}
