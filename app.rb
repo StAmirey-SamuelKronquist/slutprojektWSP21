@@ -3,6 +3,7 @@ require 'slim'
 
 require_relative './model.rb'
 require_relative './crypting.rb'
+require_relative './functions.rb'
 
 enable :sessions
 
@@ -38,7 +39,10 @@ get('/manager/:category') do
 end
 
 post('/user/register') do 
+
+    username = rnd_char()
     password = rnd_number_string()
+    p username
     p password
     identifier = password[0..7]
     p identifier

@@ -9,20 +9,24 @@ def db_connection()
     return db;
 end
 
-def register_user(password)
+def register_user(username, password)
     digested_password = BCrypt::Password.create(password)
     db_connection().execute('INSERT INTO users (password) VALUES (?)', digested_password)
     return true
 end
 
-def login_user(password)
-
-    digested_password = BCrypt::Password.create(password)
+def login_user(username, password) # a[userid], 
     p result
 
-    result = db_connection().execute('SELECT * FROM users WHERE password=?', digested_password)
+    result = db_connection().execute('SELECT password FROM users WHERE username=?', username)
     p result
     if result.length > 0
+        if BCrypt::Password.new(result[0]["password"]) == password
+            return {
+                ok: true,
+                msg: "Logged in!"
+            }
+        end
         return {
             ok: true,
             msg: "Logged in!"
@@ -34,8 +38,3 @@ def login_user(password)
     }
 end
 
-
-# Random string, first 8 is used to crypt the info, last 4 to add to the password
-def rnd_number_string()
-    12.times.map { rand(0..9) }.join
-end
