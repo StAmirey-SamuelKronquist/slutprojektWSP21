@@ -9,52 +9,70 @@ enable :sessions
 
 
 get('/') do
-    slim(:login, locals: {type:"register"})
+    slim(:"user/login")
 end
 
 get('/login') do 
-    slim(:login, locals: {type:"login"})
+    slim(:"user/login")
 end
   
 get('/register') do 
-    slim(:login, locals: {type:"register"})
+    p "Register, #{session[:password]}"
+    if session[:password] != nil
+        slim(:"user/register")
+    else 
+        slim(:"user/login")
+    end
 end
 
 get('/manager') do
-    if session[:id]
+    if true
         # Hämta information,
 
         slim(:manager, locals: {type:"register", active: false})
     else 
-        slim(:login, locals: {type:"login"})
+        slim(:"user/login")
     end
 end
 
 get('/manager/:category') do
-    if session[:id]
+    if session[:username]
         slim(:manager, locals: {type:"register"})
     else 
-        slim(:login, locals: {type:"login"})
+        slim(:"user/login")
     end
 end
 
 post('/user/register') do 
 
-    username = rnd_char()
+    user_char = rnd_char()
     password = rnd_number_string()
-    p username
+    p user_char
     p password
     identifier = password[0..7]
     p identifier
-    if register_user(identifier)
-        session[:id] = identifier  # Hash med ett key från servern
+    login_cridentials = register_user(user_char, identifier)
+    p login_cridentials
+    p login_cridentials[:valid]
+    p login_cridentials[:valid] == true
+    if login_cridentials[:valid] == true
+        session[:secret] = identifier  # Hash med ett key från servern
+        session[:username] = login_cridentials[:username]  # Hash med ett key från servern
+        session[:password] = password  # Hash med ett key från servern
         
+        p "Registration complete!"
         # "abc" --> "42379402" = "4723940"
         # "4723940" --> "42379402" = "abc"
 
-        slim(:login, locals: {type:"register", active: true, pass: password})
+        redirect("/register")
     end
 end
+
+post('/user/register_complete') do
+    p "register finished!"
+    session.delete(:password)
+    redirect("/manager")
+end 
 
 post('/user/logout') do 
     if session[:id]
@@ -71,7 +89,6 @@ post('/user/login') do
         p "logged in"
        session[:msg] = login.msg
        session[:id] = password
-       
     else
         p login.msg
     end

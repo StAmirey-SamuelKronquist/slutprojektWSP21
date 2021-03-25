@@ -1,0 +1,17 @@
+section class="flexCol" id="login"
+    article 
+        h3 Cridentials
+        b 
+            span Very important 
+            = "to remember!" 
+        p 
+            span Username: 
+            = session[:username]
+        p 
+            span Password: 
+            = session[:password][0..7]
+        p 
+            span Secret: 
+            = session[:password][8..12]
+    form action="user/register_complete" method="POST" class="flex"
+        input type="submit" id="submit" value="Complete" class="hover"
