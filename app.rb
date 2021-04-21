@@ -101,3 +101,6 @@ end
 
 # puts cipher.decrypt('guess')          # raises OpenSSL::Cipher::CipherError
 # puts cipher.decrypt(key)              # confidential
+
+
+p get_rnd_category(1)

@@ -51,3 +51,16 @@ def login_user(username, password) # a[userid],
     }
 end
 
+def select_passwords(id)
+    result = db_connection().execute('SELECT * FROM passwords p JOIN pass_cat pc ON p.id=pc.pass_id JOIN categories c ON pc.cat_id=c.id WHERE p.user_id=?', id)
+end
+def add_password(category_id, name, user_id) 
+    rnd_string = 
+end
+
+
+def get_rnd_category(id)
+    p "starting #{id}"
+    result = db_connection().execute('SELECT id FROM categories where id NOT IN (SELECT cat_id FROM passwords p JOIN pass_cat pc ON p.id=pc.pass_id JOIN categories c ON pc.cat_id=c.id WHERE p.user_id=?)', id)
+    p "result #{result}"
+end
