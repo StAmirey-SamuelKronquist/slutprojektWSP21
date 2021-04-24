@@ -91,12 +91,19 @@ input[type=number] {
     position: relative;
 }
 
-#container > main > header > p {
+#container > main > header > p,
+#container > main > header > a {
   position: absolute;
-  right: 15px;
+  
   top: 10px;
   margin: 0;
   font-size: 8pt;
+}
+#container > main > header > p {
+  left: 15px;
+}
+#container > main > header > a {
+  right: 15px;
 }
 
 #container > main > header {
@@ -157,13 +164,13 @@ input[type=number] {
     font-weight: 500;
 }
 #container > main > #login > article > form > input[type=number] {
-    flex: 1;   
+    flex: 1;  
     padding-left: 20px;
     
 }
 
 #container > main > #login > article > form > input[type=submit] {
-    width: 50px;
+    min-width: 50px;
 }
 
 #container > main > #login > form {
@@ -183,23 +190,26 @@ input[type=number] {
 #container > main > #manager {
     height: 250px;
     padding: 0 15px;
-    padding-bottom: 60px;
     box-sizing: border-box;
-    gap: 10px;
     margin-top: 50px;
+    margin-bottom: 20px;
     justify-content: flex-start;
+    overflow-y: scroll;
 }
 
 #container > main > #manager > article {
   width: 100%;
+  min-height: 50px;
   height: 50px;
   position: relative;
   background-color: var(--con-bg);
   justify-content: flex-start;
   cursor: pointer;
   overflow: hidden;
+  margin-bottom: 10px;
 }
 #container > main > #manager > article.active {
+  min-height: auto;
   height: auto;
 }
 #container > main > #manager > article > header {
@@ -208,5 +218,15 @@ input[type=number] {
   width: 100%;
   padding: 0 15px;
   box-sizing: border-box;
+  justify-content: space-between;
+}
+#container > main > #manager > article.active > header > h3 {
+  transform: rotate(90deg);
+}
+#container > main > #manager > article > article {
+  width: 90%;
+}
+#container > main > #manager > article > article > div {
+  width: 100%;
   justify-content: space-between;
 }

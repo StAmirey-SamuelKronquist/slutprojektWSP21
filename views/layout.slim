@@ -11,6 +11,8 @@ html lang="en"
                 header class="flexCol"
                     h1 PassMan
                     h2 Empire of Cion
+                    - if session[:username]
+                        a href="/logout" logout
                     p = session[:username]
                 
                 == yield

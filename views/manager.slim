@@ -1,14 +1,36 @@
-section class="flexCol" id="manager"
-    article class="flexCol"
-        header class="flex"
-            b Category 
-            h3 >
-        article class="flexCol"
-            div class="flex"
-                p password
-            div class="flex"
-                p password
-            div class="flex"
-                p password
-            div class="flex"
-                p password
+section id="manager"
+
+    - passwords.each do |name, data|
+
+
+        article class="flexCol pass_container"
+            header class="flex"
+                b = name 
+                h3 >
+            article class="flexCol"
+                - data[:passwords].each do |pass|
+                    div class="flex"
+                        p = pass[:name]
+                        p = pass[:password]
+            form action="password/add" method="POST" class="flex"
+                input type="text" autocomplete="off" id="category" name="category" class="hide" value="#{data[:id]}"
+                input type="text" autocomplete="off" id="name" name="name" placeholder="Enter name"
+                input type="submit" id="submit" value="Add" class="hover"
+    
+form action="password/add" method="POST" class="flex"
+    input type="text" autocomplete="off" id="category" name="category" class="hide" value="new"
+    input type="text" autocomplete="off" id="name" name="name" placeholder="Enter name"
+    input type="submit" id="submit" value="Add" class="hover"
+
+
+javascript:
+    let elements = document.getElementsByClassName("pass_container");
+
+    let myFunction = (e) => {
+        console.log("Working", e.target.parentNode);
+        e.target.parentNode.classList.toggle("active");
+    };
+
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].addEventListener('click', myFunction, false);
+    }

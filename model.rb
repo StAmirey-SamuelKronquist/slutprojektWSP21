@@ -29,15 +29,14 @@ def register_user(user_char, password)
 end
 
 def login_user(username, password) # a[userid], 
-    p result
-
-    result = db_connection().execute('SELECT password FROM users WHERE username=?', username)
+    result = db_connection().execute('SELECT id, password FROM users WHERE username=?', username)
     p result
     if result.length > 0
         if BCrypt::Password.new(result[0]["password"]) == password
             return {
                 ok: true,
-                msg: "Logged in!"
+                msg: "Logged in!",
+                id: result[0]["id"]
             }
         end
         return {
@@ -52,15 +51,26 @@ def login_user(username, password) # a[userid],
 end
 
 def select_passwords(id)
-    result = db_connection().execute('SELECT * FROM passwords p JOIN pass_cat pc ON p.id=pc.pass_id JOIN categories c ON pc.cat_id=c.id WHERE p.user_id=?', id)
+    return db_connection().execute('SELECT p.name as pass_name, random_str, c.name as cat_name, c.id as cat_id FROM passwords p JOIN pass_cat pc ON p.id=pc.pass_id JOIN categories c ON pc.cat_id=c.id WHERE p.user_id=?', id)
 end
-def add_password(category_id, name, user_id) 
-    rnd_string = 
+def add_password(hashed_name, hashed_rnd, category_id, id)
+    current_connection = db_connection()
+    current_connection.execute('INSERT INTO passwords (user_id, name, random_str) VALUES (?,?,?)', id, hashed_name, hashed_rnd)
+    res = current_connection.execute('SELECT id FROM passwords WHERE user_id=? AND name=? AND random_str=?', id, hashed_name, hashed_rnd).first
+    p res
+    current_connection.execute('INSERT INTO pass_cat (cat_id, pass_id) VALUES (?,?)', category_id, res["id"])
 end
 
 
 def get_rnd_category(id)
     p "starting #{id}"
-    result = db_connection().execute('SELECT id FROM categories where id NOT IN (SELECT cat_id FROM passwords p JOIN pass_cat pc ON p.id=pc.pass_id JOIN categories c ON pc.cat_id=c.id WHERE p.user_id=?)', id)
+    result = db_connection().execute('SELECT id FROM categories WHERE id NOT IN (SELECT cat_id FROM passwords p JOIN pass_cat pc ON p.id=pc.pass_id JOIN categories c ON pc.cat_id=c.id WHERE p.user_id=?)', id)
     p "result #{result}"
+    rnd = result.sample
+    p rnd
+    return rnd["id"].to_i
+end
+
+def get_category_name(id)
+    return db_connection().execute('SELECT name FROM categories WHERE id=?', id).first
 end

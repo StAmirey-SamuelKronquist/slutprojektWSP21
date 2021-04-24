@@ -26,43 +26,51 @@ get('/register') do
 end
 
 get('/manager') do
-    if true
-        # Hämta information,
+    if session[:id] != nil
+        raw_passwords = select_passwords(session[:id])
+        passwords= {}
+        raw_passwords.each do |password| 
+            if passwords[password["cat_name"]] == nil
+                passwords[password["cat_name"]] = {
+                    id: password["cat_id"],
+                    passwords: []
+                }
+            end
+            decrypted_name = decrypt_string(password["pass_name"], session[:secret])
+            decrypted_rnd_str = decrypt_string(password["random_str"], session[:secret])
+            passwords[password["cat_name"]][:passwords].push({
+                name: decrypted_name,
+                password: "#{password['cat_name'][0]}#{password['cat_name'][-1]}#{decrypted_name[0]}#{decrypted_name[1]}#{decrypted_name[2]}#{decrypted_rnd_str}"
+            }) 
+        end
 
-        slim(:manager, locals: {type:"register", active: false})
+        slim(:manager, locals: {passwords: passwords})
     else 
         slim(:"user/login")
     end
 end
 
-get('/manager/:category') do
-    if session[:username]
-        slim(:manager, locals: {type:"register"})
-    else 
-        slim(:"user/login")
-    end
-end
+# get('/manager/:category') do
+#     if session[:username]
+#         slim(:manager, locals: {type:"register"})
+#     else 
+#         slim(:"user/login")
+#     end
+# end
 
 post('/user/register') do 
 
     user_char = rnd_char()
     password = rnd_number_string()
-    p user_char
-    p password
     identifier = password[0..7]
-    p identifier
     login_cridentials = register_user(user_char, identifier)
-    p login_cridentials
-    p login_cridentials[:valid]
-    p login_cridentials[:valid] == true
     if login_cridentials[:valid] == true
         session[:secret] = identifier  # Hash med ett key från servern
+        session[:id] = login_cridentials[:id]  # Hash med ett key från servern
         session[:username] = login_cridentials[:username]  # Hash med ett key från servern
         session[:password] = password  # Hash med ett key från servern
         
         p "Registration complete!"
-        # "abc" --> "42379402" = "4723940"
-        # "4723940" --> "42379402" = "abc"
 
         redirect("/register")
     end
@@ -74,33 +82,60 @@ post('/user/register_complete') do
     redirect("/manager")
 end 
 
-post('/user/logout') do 
+get('/logout') do 
     if session[:id]
         session.destroy()
-    else
     end
+    redirect("/")
 end
 
 post('/user/login') do 
+    username = params[:username].to_s
     password = params[:password].to_s
-    p password
-    login = login_user(password)
-    if login.ok
-        p "logged in"
-       session[:msg] = login.msg
-       session[:id] = password
+    login = login_user(username, password)
+    if login[:ok]
+       session[:msg] = login[:msg]
+       session[:secret] = password
+       session[:id] = login[:id]
+       session[:username] = username
+       redirect("/manager")
     else
-        p login.msg
+        p login[:msg]
+        redirect("/")
     end
 end
 
 
-# puts plain = 'confidential'           # confidential
-# puts key = 'secret'                   # secret
-# puts cipher = plain.encrypt(key)      # 5C6D4C5FAFFCF09F271E01C5A132BE89
+post('/password/add') do
+    if session[:id]
+        category_id = params[:category].to_s
+        name = params[:name]
+        if name.length >= 3 && name.length <= 20 && validString(name)
+            if category_id == "new"
+                category_id = get_rnd_category(session[:id]).to_i
+            else 
+                category_id = category_id.to_i
+            end
+            category = get_category_name(category_id)
+            if category != nil && category["name"]
+                rnd_string = generate_rnd(4)
+                password = "#{category['name'][0]}#{category['name'][-1]}#{name[0]}#{name[1]}#{name[2]}#{rnd_string}"
 
-# puts cipher.decrypt('guess')          # raises OpenSSL::Cipher::CipherError
-# puts cipher.decrypt(key)              # confidential
+                add_password(encrypt_string(name, session[:secret]), encrypt_string(rnd_string, session[:secret]), category_id, session[:id])
+                redirect('/manager')
+            else 
+                p "Error getting category name "
+            end
+        else 
+            p "Error with the name #{name} (must be between 3 and 20 characters / numbers)"
+        end
+    end
+end
 
 
-p get_rnd_category(1)
+post('/password/add') do
+    p session[:id]
+    if session[:id]
+        
+    end
+end
