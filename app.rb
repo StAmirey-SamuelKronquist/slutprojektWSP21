@@ -4,18 +4,37 @@ require 'slim'
 require_relative './model.rb'
 require_relative './crypting.rb'
 require_relative './functions.rb'
+include Model 
+include Crypting
+include Functions
+
 
 enable :sessions
 
-
+# Displays landing page
+#
 get('/') do
-    slim(:"user/login")
+    if session[:id] != nil
+        redirect("/manager")
+    else 
+        slim(:"user/login")
+    end
 end
 
+
+# Displays the Login page
+#
 get('/login') do 
-    slim(:"user/login")
+    if session[:id] != nil
+        redirect("/manager")
+    else 
+        slim(:"user/login")
+    end
 end
   
+
+# Displays the register page with the cridentails
+# 
 get('/register') do 
     p "Register, #{session[:password]}"
     if session[:password] != nil
@@ -25,6 +44,9 @@ get('/register') do
     end
 end
 
+# Displays all the passwords for the logged in user
+#
+# @see Model#select_passwords
 get('/manager') do
     if session[:id] != nil
         raw_passwords = select_passwords(session[:id])
@@ -40,7 +62,8 @@ get('/manager') do
             decrypted_rnd_str = decrypt_string(password["random_str"], session[:secret])
             passwords[password["cat_name"]][:passwords].push({
                 name: decrypted_name,
-                password: "#{password['cat_name'][0]}#{password['cat_name'][-1]}#{decrypted_name[0]}#{decrypted_name[1]}#{decrypted_name[2]}#{decrypted_rnd_str}"
+                id: password["pass_id"],
+                password: "#{password['cat_name'][0]}#{password['cat_name'][-1]}#{decrypted_name[0].upcase!}#{decrypted_name[1]}#{decrypted_name[2]}#{decrypted_rnd_str}"
             }) 
         end
 
@@ -50,14 +73,10 @@ get('/manager') do
     end
 end
 
-# get('/manager/:category') do
-#     if session[:username]
-#         slim(:manager, locals: {type:"register"})
-#     else 
-#         slim(:"user/login")
-#     end
-# end
 
+# Registers a new user and redirects to '/register'
+#
+# @see Model#register_user
 post('/user/register') do 
 
     user_char = rnd_char()
@@ -76,12 +95,18 @@ post('/user/register') do
     end
 end
 
+
+# Completes the registation of a new user and redirects to '/manager'
+#
 post('/user/register_complete') do
     p "register finished!"
     session.delete(:password)
     redirect("/manager")
 end 
 
+
+# Logs the user out
+#
 get('/logout') do 
     if session[:id]
         session.destroy()
@@ -89,6 +114,12 @@ get('/logout') do
     redirect("/")
 end
 
+
+# Trying to login a user and either redirects to '/manager' if logged in successfully or '/' if not
+#
+# @param [String] username, The username
+# @param [String] password, The password
+# @see Model#login_user
 post('/user/login') do 
     username = params[:username].to_s
     password = params[:password].to_s
@@ -106,10 +137,17 @@ post('/user/login') do
 end
 
 
+# Adding a new password for the user and redirects to '/manager'
+#
+# @param [Integer] category, The id of the category
+# @param [String] name, The name of the new password
+# @see Model#get_category_name
+# @see Model#add_password
 post('/password/add') do
     if session[:id]
         category_id = params[:category].to_s
-        name = params[:name]
+        name = params[:name].to_s
+        p name
         if name.length >= 3 && name.length <= 20 && validString(name)
             if category_id == "new"
                 category_id = get_rnd_category(session[:id]).to_i
@@ -119,7 +157,7 @@ post('/password/add') do
             category = get_category_name(category_id)
             if category != nil && category["name"]
                 rnd_string = generate_rnd(4)
-                password = "#{category['name'][0]}#{category['name'][-1]}#{name[0]}#{name[1]}#{name[2]}#{rnd_string}"
+                password = "#{category['name'][0]}#{category['name'][-1]}#{name[0].upcase!}#{name[1]}#{name[2]}#{rnd_string}"
 
                 add_password(encrypt_string(name, session[:secret]), encrypt_string(rnd_string, session[:secret]), category_id, session[:id])
                 redirect('/manager')
@@ -133,9 +171,32 @@ post('/password/add') do
 end
 
 
-post('/password/add') do
-    p session[:id]
+# Deletes a password and redirects to '/manager'
+#
+# @param [Integer] pass_id, The id of the password
+# @see Model#delete_pass
+post('/password/delete') do
+    p "Trying to delete #{session[:id]}"
     if session[:id]
-        
+        pass_id = params[:pass_id].to_i
+        p pass_id
+        if my_pass(session[:id], pass_id)
+            p "my pass ok!"
+            delete_pass(pass_id)
+            redirect('/manager')
+        end
+    end
+    redirect('/')
+end
+
+
+# Gives information about the users if user is admin 
+#
+# @see Model#fetch_all_users
+get('/admin') do 
+    if session[:id] != nil
+        if is_admin(session[:id])
+            slim(:"admin", locals: {users: fetch_all_users()})
+        end
     end
 end

@@ -1,0 +1,8 @@
+section id="admin"
+    - users.each do |user|
+        div class="flex"
+            b = user["username"]
+            - if user["admin"].to_i == 0
+                p Peasant 
+            - else 
+                p Admin

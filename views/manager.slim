@@ -12,6 +12,9 @@ section id="manager"
                     div class="flex"
                         p = pass[:name]
                         p = pass[:password]
+                        form action="password/delete" method="POST" class="flex"
+                            input type="number" id="pass_id" name="pass_id" class="hide" value="#{pass[:id]}"
+                            input type="submit" value="Delete"
             form action="password/add" method="POST" class="flex"
                 input type="text" autocomplete="off" id="category" name="category" class="hide" value="#{data[:id]}"
                 input type="text" autocomplete="off" id="name" name="name" placeholder="Enter name"
